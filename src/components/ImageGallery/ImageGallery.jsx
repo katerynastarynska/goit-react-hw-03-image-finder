@@ -69,7 +69,7 @@ class ImageGallery extends Component {
 //   };
 
   render() {
-    const { images, loading, error, status } = this.state;
+    const { images, status } = this.state;
 
     if (status === STATUS.PENDING) {
       return <div>Loading...</div>;
