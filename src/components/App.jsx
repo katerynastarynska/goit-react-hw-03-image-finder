@@ -3,30 +3,27 @@ import { ToastContainer } from 'react-toastify';
 
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
+import css from '../components/App.module.css'
 
 class App extends Component {
   state = {
-        searchQuery: '',
-     };
-
+    searchQuery: '',
+  };
 
   handleFormImageSearch = searchQuery => {
-    console.log(searchQuery);
     this.setState({ searchQuery });
   };
 
-
   render() {
-    const {searchQuery } = this.state;
+    const { searchQuery } = this.state;
     return (
-      <div>
-        <Searchbar onSubmit={this.handleFormImageSearch} 
-        searchQuery={this.state.searchQuery}
+      <div className={css.app}>
+        <Searchbar
+          onSubmit={this.handleFormImageSearch}
+          searchQuery={this.state.searchQuery}
         />
         <ToastContainer autoClose={3000} />
-        <ImageGallery
-          searchQuery={searchQuery}
-        />
+        <ImageGallery searchQuery={searchQuery} />
       </div>
     );
   }

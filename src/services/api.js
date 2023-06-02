@@ -17,7 +17,7 @@ export const getImages = async ({ searchQuery, limit, currentPage }) => {
     //   });
 
     const response = await fetch(`${BASE_URL}/?q=${searchQuery}&page=${currentPage}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=${limit}`);
-
+console.log(currentPage)
     if (!response.ok) {
         throw new Error("Something went wrong");
     }
