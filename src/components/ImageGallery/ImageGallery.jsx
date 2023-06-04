@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import { toast } from 'react-toastify';
-
+import PropTypes from 'prop-types';
 import Loader from 'components/Loader/Loader';
 import Button from 'components/Button/Button';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
-import css from './ImageGallery.module.css';
 import { getImages } from '../../services/api';
+import css from './ImageGallery.module.css';
 
 const STATUS = {
   IDLE: 'idle',
@@ -55,7 +55,7 @@ class ImageGallery extends Component {
       }
       if (!data?.hits?.length) {
         toast.error('Results not found');
-        this.setState({ status: STATUS.IDLE })
+        this.setState({ status: STATUS.IDLE });
         return;
       }
       this.setState({
@@ -105,3 +105,7 @@ class ImageGallery extends Component {
   }
 }
 export default ImageGallery;
+
+ImageGallery.propTypes = {
+  searchQuery: PropTypes.string.isRequired,
+};
