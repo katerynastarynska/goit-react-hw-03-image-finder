@@ -55,6 +55,7 @@ class ImageGallery extends Component {
       }
       if (!data?.hits?.length) {
         toast.error('Results not found');
+        this.setState({ status: STATUS.IDLE })
         return;
       }
       this.setState({
