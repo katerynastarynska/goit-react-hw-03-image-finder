@@ -1,8 +1,6 @@
 import { Component } from 'react';
 import { toast } from 'react-toastify';
 
-// import Loader from '../Loader/Loader';
-// import Button from '../Button/Button';
 import Loader from 'components/Loader/Loader';
 import Button from 'components/Button/Button';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
@@ -28,11 +26,8 @@ class ImageGallery extends Component {
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    const { currentPage } = this.state;
+    const { currentPage, status, error } = this.state;
     const { searchQuery } = this.props;
-
-    console.log('prevProps.searchQuery', prevProps.searchQuery);
-    console.log('this.props.searchQuery', searchQuery);
 
     if (prevProps.searchQuery !== searchQuery) {
       await this.setState({ currentPage: 1, images: [] });
@@ -41,16 +36,18 @@ class ImageGallery extends Component {
     if (prevState.currentPage !== currentPage) {
       this.fetchImages();
     }
+    if (prevState.status !== status && status === STATUS.REJECTED && error) {
+      toast.error(error);
+    }
   }
 
   fetchImages = async () => {
-    const { limit,  currentPage } = this.state;
+    const { limit, currentPage, images } = this.state;
     const { searchQuery } = this.props;
 
     await this.setState({ status: STATUS.PENDING });
     try {
       const data = await getImages({ searchQuery, limit, currentPage });
-      console.log(data);
 
       if (!data?.hits) {
         toast.error('Service not available');
@@ -61,25 +58,23 @@ class ImageGallery extends Component {
         return;
       }
       this.setState({
-        images: [...data.hits],
+        images: [...images, ...data.hits],
         totalPages: Math.ceil(data.total / limit),
         status: STATUS.RESOLVED,
         error: null,
       });
     } catch (error) {
-      this.setState({ error: error.message, status: STATUS.REJECTED });
+      this.setState({ error: 'Bad request', status: STATUS.REJECTED });
     }
   };
 
   handleLoadMore = () => {
-    console.log('click');
-
     this.setState(prevState => ({ currentPage: prevState.currentPage + 1 }));
-    console.log(this.state);
   };
 
   render() {
-    const { images, status, error } = this.state;
+    const { images, status, currentPage, totalPages } = this.state;
+    const showLoadMoreBtn = images.length !== 0 && currentPage < totalPages;
 
     if (status === STATUS.PENDING) {
       return <Loader />;
@@ -89,23 +84,22 @@ class ImageGallery extends Component {
       return (
         <>
           <ul className={css.imageGallery}>
-            {/* {images.map(image => {
-              return <ImageGalleryItem image={image} />;
-            })} */}
-            {images.map(image => { 
-                return ( <li key={image.id} className={css.imageGalleryItem}>
-                        <ImageGalleryItem image={image}/>
-                        </li> 
- )
-                   
+            {images.map(image => {
+              return (
+                <li key={image.id} className={css.imageGalleryItem}>
+                  <ImageGalleryItem image={image} />
+                </li>
+              );
             })}
           </ul>
-          <Button onClick={this.handleLoadMore} />
+          {showLoadMoreBtn && (
+            <Button
+              onClick={this.handleLoadMore}
+              disabled={status === STATUS.PENDING ? true : false}
+            />
+          )}
         </>
       );
-    }
-    if (status === STATUS.REJECTED) {
-      return <div>{error.message}</div>;
     }
   }
 }
