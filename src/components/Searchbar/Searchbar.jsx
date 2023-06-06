@@ -15,6 +15,7 @@ class Searchbar extends Component {
 
   handleSubmit = e => {
     const { searchQuery } = this.state;
+    console.log(searchQuery);
     e.preventDefault();
     if (searchQuery.trim() === '') {
       toast.error('Please enter image name');
